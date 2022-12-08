@@ -22,6 +22,7 @@ int main(int argc, char **argv){
 					return EXIT_FAILURE;
 			}
 
+		//Only just receives random numbers currently
 		while(1){
 			rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), NULL);
 			printf("msg: %f, %f \n", msg.data[0],msg.data[1]);

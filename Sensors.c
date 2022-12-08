@@ -33,63 +33,62 @@ int main(void) {
 	 //*/
 
 	//random number
-	 srand(time(NULL));
+	srand(time(NULL));
 
 	//timer channel
-		int rcvid;
-		struct sigevent event;
-		int chid, coid;
-		message_t msg;
-		timer_t timerid;
-		struct itimerspec it;
+	int rcvid;
+	struct sigevent event;
+	int chid, coid;
+	message_t msg;
+	timer_t timerid;
+	struct itimerspec it;
 
-		// create a channel
-		chid = ChannelCreate(0);
+	// create a channel
+	chid = ChannelCreate(0);
 
-	    //establish a connection to the channel
-		coid = ConnectAttach(0,0,chid, _NTO_SIDE_CHANNEL ,0);
-		printf("Channel created! \n");
+	//establish a connection to the channel
+	coid = ConnectAttach(0,0,chid, _NTO_SIDE_CHANNEL ,0);
+	printf("Channel created! \n");
 
-		/* set up the pulse event that will be delivered to us by the kernel
-		 * whenever the timer expires  (USE the MACRO SIGEV_PULSE_INIT)
-		 */
-		SIGEV_PULSE_INIT(&event,coid,  0 ,TIMER_PULSE_EVENT, 0);
+	/*  Timer setup
+	 *
+	 *
+	 */
+	SIGEV_PULSE_INIT(&event,coid,  0 ,TIMER_PULSE_EVENT, 0);
+	timer_create(CLOCK_REALTIME,&event, &timerid);
+
+	//1 second delay
+	it.it_value.tv_sec = 1;
+	it.it_value.tv_nsec = 0;
+	//send every 0.05
+	it.it_interval.tv_sec = 0;
+	it.it_interval.tv_nsec = 50000000;
+
+	if(timer_settime(timerid,0,&it,NULL) == -1){
+		return -1;
+	}
+	//****
 
 
+	//Send messages to Server
+	while (1)
+		{
+			rcvid = MsgReceive(chid,&msg,sizeof(msg), NULL);
 
-		timer_create(CLOCK_REALTIME,&event, &timerid);
-		//1 second delay
-		it.it_value.tv_sec = 1;
-		it.it_value.tv_nsec = 0;
-		//send every 0.05
-		it.it_interval.tv_sec = 0;
-		it.it_interval.tv_nsec = 50000000;
-
-		if(timer_settime(timerid,0,&it,NULL) == -1){
-			return -1;
-		}
-
-
-		while (1)
-			{
-				/* wait here for the pulse message
-				 * if we got a pulse check if its out timer pulse and print got our pulse */
-				rcvid = MsgReceive(chid,&msg,sizeof(msg), NULL);
-
-				if(rcvid == 0){
-					switch (msg.pulse.code){
-						case TIMER_PULSE_EVENT:
-							Servermsg.type = 1;
-							determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
-							printf("Timer event received! \n");
-							MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply));
-							break;
-						default:
-							printf("Unsupported pulse received. \n");
-					}
+			if(rcvid == 0){
+				switch (msg.pulse.code){
+					case TIMER_PULSE_EVENT:
+						Servermsg.type = 1;
+						determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
+						printf("Timer event received! \n");
+						MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply));
+						break;
+					default:
+						printf("Unsupported pulse received. \n");
 				}
-
 			}
+
+		}
 
 
 
