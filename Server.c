@@ -24,9 +24,10 @@ int main(int argc, char **argv){
 
 		//Only just receives random numbers currently
 		while(1){
-			rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), NULL);
+			//should check type(eventually)
+			rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), NULL); // recieved sensor data from thread
 			printf("msg: %f, %f \n", msg.data[0],msg.data[1]);
-			MsgReply (rcvid, EOK, &msg, sizeof (msg));
+			MsgReply (rcvid, EOK, &msg, sizeof (msg)); //Reply to message so process can move on
 		}
 
 }
