@@ -80,7 +80,7 @@ int main(void) {
 					case TIMER_PULSE_EVENT:
 						Servermsg.type = 1;
 						determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
-						printf("Timer event received! \n");
+						//printf("Timer event received! \n");
 						MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply));
 						break;
 					default:
@@ -98,14 +98,34 @@ int main(void) {
 }
 
 //Generates a random floating point number
-double gen(){
-	return  (float)rand()/(float)(RAND_MAX/10.0);;
+double gen(double max){
+	return  ((float)rand()/(float)(RAND_MAX/(max * 2))) -max;
 }
 
 
 // determines when to generate an object for suspension
 void determineOb(double *data){
+	//srand(time(NULL));
+	int mode;
 
-	data[0] = gen();
-	data[1] = gen();
+	mode = (int)rand()%(100);
+
+	printf("mode: %d \n", mode);
+	if(mode == 1){
+		//large object
+		data[0] = gen(MAX_DEPTH);
+		data[1] = gen(MAX_DEPTH);
+	} else if (mode == 2){
+		//medium object
+		data[0] = gen((MAX_DEPTH *3)/4);
+		data[1] = gen((MAX_DEPTH *3)/4);
+	} else if (mode == 3){
+		//small object
+		data[0] = gen(MAX_DEPTH/2);
+		data[1] = gen(MAX_DEPTH/2);
+	}else{
+		//noise
+		data[0] = gen(MIN_DEPTH);
+		data[1] = gen(MIN_DEPTH);
+	}
 }
