@@ -16,7 +16,7 @@ TARGET = -Vgcc_ntox86_64
 
 CFLAGS += $(DEBUG) $(TARGET) -Wall
 LDFLAGS+= $(DEBUG) $(TARGET)
-BINS = sensors server
+BINS = Control Sensors RideMode
 all: $(BINS)
 
 clean:
@@ -24,6 +24,7 @@ clean:
 #	cd solutions; make clean
 
 
-server.o: server.c suspension.h
-sensors.o: sensors.c suspension.h
+Control.o: Control.c Control.h
+Sensors.o: Sensors.c Control.h
+RideMode.o: RideMode.c Control.h
 
