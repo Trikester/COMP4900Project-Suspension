@@ -40,7 +40,7 @@ int main(void)
 
 
 
-
+	int readings = 0;
 
 
 
@@ -77,7 +77,7 @@ int main(void)
 	it.it_value.tv_sec = 1;
 	it.it_value.tv_nsec = 0;
 	it.it_interval.tv_sec = 0;
-	it.it_interval.tv_nsec = 500000000;
+	it.it_interval.tv_nsec = 5000000;
 
 	timer_settime(timerid,0,&it,NULL);
 
@@ -117,6 +117,8 @@ int main(void)
 		else if(rcvid>0)
 		{
 			//Message received
+			readings++;
+			printf("%d\n",readings);
 			leftOffset = msg.data[0];
 			rightOffset = msg.data[1];
 			MsgReply (rcvid, EOK, &msg, sizeof (msg));
@@ -162,11 +164,11 @@ void calculateDampening()
 			rightForce=rightOffset*0.5;
 	}
 
-	if(rideMode==COMFORT_MODE)
-		printf("\nRide Mode is: Comfort\n");
-	else
-		printf("\nRide Mode is: Sport\n");
-	printf("The current Left Offset is %f, The required force is %f\n",leftOffset,leftForce);
-	printf("The current Right Offset is %f, The required force is %f\n",rightOffset,rightForce);
+	//if(rideMode==COMFORT_MODE)
+		//printf("\nRide Mode is: Comfort\n");
+	//else
+		//printf("\nRide Mode is: Sport\n");
+	//printf("The current Left Offset is %f, The required force is %f\n",leftOffset,leftForce);
+	//printf("The current Right Offset is %f, The required force is %f\n",rightOffset,rightForce);
 }
 

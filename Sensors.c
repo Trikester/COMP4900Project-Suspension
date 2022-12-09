@@ -8,26 +8,25 @@
 #include <time.h>
 #include <string.h>
 
-#include "suspension.h"
+#include "Control.h"
 
-#define TIMER_PULSE_EVENT (_PULSE_CODE_MINAVAIL + 7)
 
 double gen();
 void determineOb(double *data);
 
 
 int main(void) {
-	printf("Timer event received! \n");
+	//printf("Timer event received! \n");
 	//main controller channel
 	//struct sigevent event;
 	//*
 
+	//int Serverchid;
+	int Servercoid;
+	message_t Servermsg, Serverply;
 
-	int Serverchid, Servercoid;
-	message_s Servermsg, Serverply;
 
-
-	if((Servercoid = name_open(SERVER_NAME, 0)) == -1){
+	if((Servercoid = name_open(CHANNEL_NAME, 0)) == -1){
 		return EXIT_FAILURE;
 	}
 	 //*/
@@ -54,7 +53,7 @@ int main(void) {
 	 *
 	 *
 	 */
-	SIGEV_PULSE_INIT(&event,coid,  0 ,TIMER_PULSE_EVENT, 0);
+	SIGEV_PULSE_INIT(&event,coid,  0 ,SENSOR_TIMER_PULSE, 0);
 	timer_create(CLOCK_REALTIME,&event, &timerid);
 
 	//1 second delay
@@ -62,7 +61,7 @@ int main(void) {
 	it.it_value.tv_nsec = 0;
 	//send every 0.05
 	it.it_interval.tv_sec = 0;
-	it.it_interval.tv_nsec = 50000000;
+	it.it_interval.tv_nsec = 5000000;
 
 	if(timer_settime(timerid,0,&it,NULL) == -1){
 		return -1;
@@ -77,11 +76,12 @@ int main(void) {
 
 			if(rcvid == 0){
 				switch (msg.pulse.code){
-					case TIMER_PULSE_EVENT:
+					case SENSOR_TIMER_PULSE:
 						Servermsg.type = 1;
 						determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
 						//printf("Timer event received! \n");
 						MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply));
+
 						break;
 					default:
 						printf("Unsupported pulse received. \n");
@@ -110,7 +110,7 @@ void determineOb(double *data){
 
 	mode = (int)rand()%(100);
 
-	printf("mode: %d \n", mode);
+	//printf("mode: %d \n", mode);
 	if(mode == 1){
 		//large object
 		data[0] = gen(MAX_DEPTH);
@@ -129,3 +129,4 @@ void determineOb(double *data){
 		data[1] = gen(MIN_DEPTH);
 	}
 }
+
