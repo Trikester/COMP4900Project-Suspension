@@ -16,16 +16,12 @@ void determineOb(double *data);
 
 
 int main(void) {
-	//printf("Timer event received! \n");
-	//main controller channel
-	//struct sigevent event;
-	//*
 
-	//int Serverchid;
+	//main controller channel
 	int Servercoid;
 	message_t Servermsg, Serverply;
 
-
+	//Open channel to Control
 	if((Servercoid = name_open(CHANNEL_NAME, 0)) == -1){
 		return EXIT_FAILURE;
 	}
@@ -72,11 +68,12 @@ int main(void) {
 	//Send messages to Server
 	while (1)
 		{
-			rcvid = MsgReceive(chid,&msg,sizeof(msg), NULL);
 
-			if(rcvid == 0){
+			rcvid = MsgReceive(chid,&msg,sizeof(msg), NULL);
+			if(rcvid == 0){ //receive pulse
 				switch (msg.pulse.code){
-					case SENSOR_TIMER_PULSE:
+
+					case SENSOR_TIMER_PULSE: //timer pulse
 						Servermsg.type = 1;
 						determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
 						//printf("Timer event received! \n");
@@ -97,13 +94,15 @@ int main(void) {
 
 }
 
-//Generates a random floating point number
+//Generates a random floating point number from -max to max
+//Returns a double
 double gen(double max){
 	return  ((float)rand()/(float)(RAND_MAX/(max * 2))) -max;
 }
 
 
 // determines when to generate an object for suspension
+// Takes an array of 2 double and sets the values for each index
 void determineOb(double *data){
 	//srand(time(NULL));
 	int mode;

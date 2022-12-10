@@ -31,6 +31,7 @@
 #define MIN_DEPTH 1
 
 
+//Data union for receiving info from other processes
 typedef union
 {
 	struct _pulse pulse;
