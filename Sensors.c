@@ -73,11 +73,11 @@ int main(void) {
 			if(rcvid == 0){ //receive pulse
 				switch (msg.pulse.code){
 
-					case SENSOR_TIMER_PULSE: //timer pulse
+					case SENSOR_TIMER_PULSE: //timer pulse from kernal
 						Servermsg.type = 1;
 						determineOb(Servermsg.data); //Generates random numbers for "obstacle" on road
-						//printf("Timer event received! \n");
-						MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply));
+
+						MsgSend(Servercoid,&Servermsg,sizeof(Servermsg),&Serverply, sizeof(Serverply)); //Send obstacle data to Control
 
 						break;
 					default:
